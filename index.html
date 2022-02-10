@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- displays site properly based on user's device -->
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./images/favicon-32x32.png"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>Frontend Mentor | Interactive comments section</title>
+
+    <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
+    <style>
+      .attribution {
+        font-size: 11px;
+        text-align: center;
+      }
+      .attribution a {
+        color: hsl(228, 45%, 44%);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <!-- Pull dynamic content from the data.json file -->
+      <!-- <div class="col"> -->
+        <!-- <div class="block">
+      <div class="division">
+        <div class="num">
+          <img src="images/icon-plus.svg">
+          <div class="number">12</div>
+          <img src="images/icon-minus.svg">
+        </div>
+        <div class="section">
+          <div class="heady">
+            <div class="profile">
+              <img src="images/avatars/image-amyrobson.png" class="julio" />
+              <span class="name">ambyrobson</span>
+              <span class="time">1 month ago</span>
+            </div>
+            <div class="option">
+              <div class="delete"><img src="images/icon-delete.svg">Delete</div>
+              <div class="edit"><img src="images/icon-edit.svg">Edit</div>
+
+            </div>
+        <div class="reply"><img src="images/icon-reply.svg" class="img_reply"><span class="repli">Reply</span></div>
+            
+          </div>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio
+            expedita placeat aliquam maiores sapiente ducimus! Repellat sint
+            eveniet pariatur corrupti.
+          </p>
+        </div>
+      </div>
+    </div> -->
+
+    
+        <div class="comment">
+          <img src="images/avatars/image-juliusomo.png" class="julio" />
+          <textarea
+            id="texty"
+            class="text"
+            row="60"
+            col="200"
+    
+            placeholder="Add a comment"
+          ></textarea>
+          <button class="btn send">SEND</button>
+        </div>
+      
+    </main>
+    <div class="del_comment hidden">
+      <h4>Delete comment</h4>
+      <p>
+        Are you sure you want to delete this comment?This will remove the
+        comment and can't be undone.
+      </p>
+      <div class="btns">
+        <button class="btn cancel_btn">NO,CANCEL</button>
+        <button class="btn del_btn">YES,DELETE</button>
+      </div>
+    </div>
+
+    <script type="text" src="data.json"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
