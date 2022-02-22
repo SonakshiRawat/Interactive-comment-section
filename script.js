@@ -1,105 +1,185 @@
 "use strict";
-const comment = document.querySelector(".comment");
+
+//Declaration
+const container = document.querySelector(".container");
+const text = document.querySelector(".text");
 const body = document.querySelector("body");
+const main = document.querySelector("main");
 
 const delSection = document.querySelector(".del_comment");
 const delBtn = document.querySelector(".del_btn");
 const cancelBtn = document.querySelector(".cancel_btn");
-const heady = document.querySelectorAll(".heady");
 
+//Event Listners
+window.addEventListener("load", load);
+
+//functions
 async function load() {
-  try {
-    const response = await fetch("data.json");
-    const users = await response.json();
-    users.comments.forEach((element) => {
-      description(element);
-    });
-    users.comments[1].replies.forEach((element) => {
-      if (element.id === 4) {
-        myComment(element.content, element.replyingTo, element.createdAt);
-        sending();
-        deleteComment();
-        editing();
+  container.innerHTML = "";
+  console.log("hi");
+  const res = await fetch("data.json");
+  const data = await res.json();
+  const dict = JSON.parse(localStorage.getItem("comment"));
+  const users = dict ? dict : data;
+  localStorage.setItem("comment", JSON.stringify(users));
+  initial();
+}
 
-      } else {
-        description(element);
-        replying();
+function initial() {
+  const initComment = JSON.parse(localStorage.getItem("comment"));
+  let comment = initComment.comments;
+  for (let i = 0; i < comment.length; i++) {
+    if (comment[i].user.username !== initComment.currentUser.username) {
+      description(comment[i].id, comment[i]);
+    } else {
+
+      myComment(comment[i].id, comment[i].content, "", comment[i].createdAt);
+    }
+
+
+    if (comment[i].replies.length !== 0) {
+      let inner = comment[i].replies;
+      for (let i = 0; i < inner.length; i++) {
+        if (inner[i].user.username !== initComment.currentUser.username) {
+          description(inner[i].id, inner[i]);
+        } else {
+          myComment(
+            inner[i].id,
+            inner[i].content,
+            inner[i].replyingTo,
+            inner[i].createdAt
+          );
+        }
       }
-    });
-    votes();
-  } catch (e) {
-    console.log(e);
+    }
   }
+  deleteComment();
+  sending();
+  replying();
+  editing();
+  votes();
 }
 
-load();
-
-function description(users) {
+function description(id, users) {
   // console.log(users);
-  const html = `<div class="block">
-    <div class="division">
-      <div class="num">
-        <img src="images/icon-plus.svg" class="plus">
-        <div class="number">${users.score}</div>
-        <img src="images/icon-minus.svg" class="minus">
-      </div>
-      <div class="section">
-        <div class="heady">
-          <div class="profile">
-       <img src="${users.user.image.png}" class="julio" />
-            <span class="name">${users.user.username}</span>
-            <span class="time">${users.createdAt}</span>
-          </div>
-          
-          
-          <div class="reply"><img src="images/icon-reply.svg" class="img_reply"><span class="repli">Reply</span></div>
+  const html = `<div class="block" data-id="${id}">
+      <div class="division">
+        <div class="num">
+          <img src="images/icon-plus.svg" class="plus">
+          <div class="number">${users.score}</div>
+          <img src="images/icon-minus.svg" class="minus">
         </div>
-        <p>
-        <span class="dark">${
-          !users.replyingTo ? "" : "@" + users.replyingTo
-        }</span>
-        <span class="para"> ${users.content}</span>
-        </p>
+        <div class="section">
+          <div class="heady">
+            <div class="profile">
+         <img src="${users.user.image.png}" class="julio" />
+              <span class="name">${users.user.username}</span>
+              <span class="time">${users.createdAt}</span>
+            </div>
+            
+            
+            <div class="reply"><img src="images/icon-reply.svg" class="img_reply"><span class="repli">Reply</span></div>
+          </div>
+          <p>
+          <span class="dark">${
+            !users.replyingTo ? "" : "@" + users.replyingTo
+          }</span>
+          <span class="para"> ${users.content}</span>
+          </p>
+        </div>
       </div>
-    </div>
-    </div>
-    `;
-
-  comment.insertAdjacentHTML("beforebegin", html);
+      </div>
+      `;
+  container.insertAdjacentHTML("beforeend", html);
 }
 
-function myComment(para, replyTo, time, chk) {
-  const html = `    <div class="block ${(chk)?'beech':''}">
-    <div class="division">
-      <div class="num">
-        <img src="images/icon-plus.svg" class="plus">
-        <div class="number">12</div>
-        <img src="images/icon-minus.svg" class="minus">
-      </div>
-      <div class="section">
-        <div class="heady">
-          <div class="profile">
-            <img src="images/avatars/image-juliusomo.png" class="julio" />
-            <span class="name">juliusomo</span>
-            <span class="time">${time ? time : "Now"}</span>
-          </div>
-          <div class="option">
-          <div class="delete"><img src="images/icon-delete.svg">Delete</div>
-          <div class="edit"><img src="images/icon-edit.svg">Edit</div>
-  
+function myComment(id, para, replyTo, time, chk) {
+  const html = `<div class="block ${replyTo ? "beech" : ""}" data-id="${id}">
+      <div class="division">
+        <div class="num">
+          <img src="images/icon-plus.svg" class="plus">
+          <div class="number">12</div>
+          <img src="images/icon-minus.svg" class="minus">
         </div>
-           </div>
-        <p>
-        <span class="dark">
-       ${(replyTo) ? "@" + replyTo : ""}</span>
-        <span class="para"> ${para}</span>
-        </p>
+        <div class="section">
+          <div class="heady">
+            <div class="profile">
+              <img src="images/avatars/image-juliusomo.png" class="julio" />
+              <span class="name">juliusomo</span>
+              <span class="time">${time ? time : "Now"}</span>
+            </div>
+            <div class="option">
+            <div class="delete"><img src="images/icon-delete.svg">Delete</div>
+            <div class="edit"><img src="images/icon-edit.svg">Edit</div>
+    
+          </div>
+             </div>
+          <p>
+          <span class="dark">
+         ${replyTo ? "@" + replyTo : ""}</span>
+          <span class="para"> ${para}</span>
+          </p>
+        </div>
       </div>
-    </div>
-  </div> 
-    `;
+    </div> 
+      `;
   if (chk) return html;
-  comment.insertAdjacentHTML("beforebegin", html);
+  container.insertAdjacentHTML("beforeend", html);
+}
+
+function deleteComment() {
+  let dict = JSON.parse(localStorage.getItem("comment")) || [];
+  const del = document.querySelectorAll(".delete");
+  del.forEach((n) =>
+    n.addEventListener("click", function (e) {
+      let data = n.closest(".block").dataset.id;
+      //display modal and overlay
+      delSection.classList.remove("hidden");
+      const over = document.createElement("div");
+      over.classList.add("overlay");
+      const scrollTop = `${window.pageYOffset}px`;
+      over.style.top = scrollTop;
+      // over.style.top=`0%`
+      over.style.height='100%'
+      main.appendChild(over);
+      body.style.overflowY = "hidden";
+
+      //if click cancel
+      cancelBtn.addEventListener("click", function () {
+        delSection.classList.add("hidden");
+        over.classList.remove("overlay");
+        body.style.overflowY = "scroll";
+      });
+
+      //If click delete
+      delBtn.addEventListener("click", function () {
+        dict.comments.map((item) => {
+          if (item.id === +data) {
+            dict.comments.splice(dict.comments.indexOf(item), 1);
+          }
+        });
+
+        dict.comments.map((item) => {
+
+          if (item.replies.length !== 0) {
+            item.replies.forEach((n) => {
+              console.log(n);
+              if (n.id === +data) {
+                item.replies.splice(item.replies.indexOf(n), 1);
+              }
+            });
+          }
+        });
+        localStorage.setItem("comment", JSON.stringify(dict));
+        container.innerHTML = "";
+
+        initial();
+        delSection.classList.add("hidden");
+        over.classList.remove("overlay");
+        body.style.overflowY = "scroll";
+      });
+    })
+  );
 }
 
 function addComment(val, choice) {
@@ -119,143 +199,132 @@ function addComment(val, choice) {
   }</button>
   </div>`;
 
-
   return html;
 }
-function deleteComment() {
-  const del = document.querySelectorAll(".delete");
-  del.forEach((n) =>
-    n.addEventListener("click", function (e) {
-      delSection.classList.remove("hidden");
-      body.style.backgroundColor = "rgba(0,0,0,0.6)";
-      body.style.overflowY = "hidden";
-      cancelBtn.addEventListener("click", function () {
-        delSection.classList.add("hidden");
-        body.style.backgroundColor = "hsl(228, 33%, 97%)";
-        body.style.overflowY = "scroll";
-      });
-
-      delBtn.addEventListener("click", function () {
-        delSection.classList.add("hidden");
-        body.style.backgroundColor = "hsl(228, 33%, 97%)";
-        body.style.overflowY = "scroll";
-        e.target.closest(".block").style.display = "none";
-      });
-
-    })
-  );
-}
-const text = document.querySelector(".text");
-let a;
-
-function editing() {
-  console.log("changyy");
-
-  const edit = document.querySelectorAll(".edit");
-console.log(edit);
-
-  edit.forEach((n) =>
-    n.addEventListener("click", function (e) {
-      console.log( e.target);
-      let val =
-        e.target.closest(".section").children[1].lastElementChild.textContent;
-
-      let v =
-        e.target.closest(".section").children[1].firstElementChild.textContent;
-    
-      const choice = "update";
-      const html = addComment(val, choice);
-      let updateTo= e.target.closest('.block').previousElementSibling
-      e.target.closest(".block").insertAdjacentHTML("beforebegin", html);
-      e.target.closest(".block").classList.add("hidden");
-      a = e.target;
-
-      updating(v,updateTo);
-      deleteComment();
-    })
-  );
-}
-let t=0;
-let b = 0;
-let m = 0;
-
-function sending(blocky) {
-  const send = document.querySelectorAll(".send");
-
-  send.forEach((n) =>
-    n.addEventListener("click", function (e) {      
-      // console.log("sendiiii");
-      let para = e.target.previousElementSibling.value;
-      let replyTo =
-        e.target.parentElement.previousElementSibling.children[0]
-          .lastElementChild.firstElementChild.firstElementChild
-          .firstElementChild.nextElementSibling.textContent;
-      let time = "Now";
-      if(replyTo==='juliusomo'){
-        if (text.value === "") return;
-        const html = myComment(text.value);
-        deleteComment();
-        text.value = "";
-      }
-      else{
-        if (para === "") return;
-      const html = myComment(para, replyTo, time, 1);
-      let k= blocky.insertAdjacentHTML("afterend", html);
-      e.target.parentElement.classList.add('hidden');
-      }
-  deleteComment();
-editing();
-    })
-  );
-}
-function updating(replyTo,updateTo) {
-  // console.log("fieeeeee");
-  const update = document.querySelectorAll(".update");
-  update.forEach((n) =>
-    n.addEventListener("click", function (e) {
-      console.log("updatiiiii");
-      // console.log(updateTo);
-      if (e.target.classList.contains("update")) {
-        let para = e.target.previousElementSibling.value;
-     if(replyTo)   replyTo=replyTo.replace('@','')
-        if((replyTo.trim()).length===0)replyTo=undefined;
-        // if(!updateTo.classList.contains('hidden')){
-        let time="Now"
-        const html=myComment(para, replyTo,time,1);
-        updateTo.insertAdjacentHTML('afterend',html);
-        e.target.parentElement.classList.add("hidden");
-    //   }
-    // else{
-    //   myComment(para,replyTo)
-    //   e.target.parentElement.classList.add("hidden");
-
-    // }
-    }
-      // editing();
-      deleteComment();
-    })
-  );
-}
-
 
 function replying() {
-  // console.log("repliii");
   const reply = document.querySelectorAll(".repli");
 
   reply.forEach((n) =>
     n.addEventListener("click", function (e) {
-     
-// if(m)m.classList.add('.hidden')
-      // console.log(e.target.parentElement.classList);
-      // console.log(e.target.closest(".block"));
-      let blocky = e.target.closest(".block");
-      // console.log(e.target.closest(".heady").nextElementSibling.textContent);
+      let blocky = e.target.closest(".block").dataset.id;
       const html = addComment();
       e.target.closest(".block").insertAdjacentHTML("afterend", html);
-      // m=e.target.closest('main').nextElementSibling;
-      // console.log(m);
-
       sending(blocky);
+    })
+  );
+}
+
+function sending(idd) {
+  let dict = JSON.parse(localStorage.getItem("comment")) || [];
+  const send = document.querySelectorAll(".send");
+  send.forEach((n) =>
+    n.addEventListener("click", function (e) {
+      let para = e.target.previousElementSibling.value;
+
+      if (text.value) {
+        if (text.value === "") return;
+        // console.log(text.value);
+        details(text.value, dict.comments, "");
+        localStorage.setItem("comment", JSON.stringify(dict));
+        text.value = "";
+        container.innerHTML = "";
+        initial();
+      }
+      dict.comments.map((item) => {
+        if (item.id === +idd) {
+          details(para, item.replies, item);
+        }
+
+        item.replies.map((n) => {
+          if (n.id === +idd) {
+            details(para, item.replies, n);
+          }
+        });
+      });
+      localStorage.setItem("comment", JSON.stringify(dict));
+      text.value = "";
+      para = "";
+      container.innerHTML = "";
+      initial();
+    })
+  );
+}
+
+function details(para, local, item) {
+  const detail = {
+    id: Math.trunc(Math.random() * 200),
+    content: `${para}`,
+    createdAt: "Now",
+    score: 0,
+    replyingTo: `${item ? item.user.username : ""}`,
+    user: {
+      image: {
+        png: "./images/avatars/image-amyrobson.png",
+      },
+      username: "juliusomo",
+    },
+    replies: [],
+  };
+  local.push(detail);
+}
+
+
+function editing() {
+  let dict = JSON.parse(localStorage.getItem("comment")) || [];
+
+  const edit = document.querySelectorAll(".edit");
+  // console.log(edit);
+
+  edit.forEach((n) =>
+    n.addEventListener("click", function (e) {
+      let set = n.closest(".block").dataset.id;
+      dict.comments.map((item) => {
+        if (item.id === +set) {
+          let val = item.content;
+          const choice = "update";
+          const html = addComment(val, choice);
+          e.target.closest(".block").insertAdjacentHTML("beforebegin", html);
+          e.target.closest(".block").classList.add("hidden");
+          updating(item.id);
+        }
+        item.replies.map((n) => {
+          if (n.id === +set) {
+            let val = n.content;
+            const choice = "update";
+            const html = addComment(val, choice);
+            e.target.closest(".block").insertAdjacentHTML("beforebegin", html);
+            e.target.closest(".block").classList.add("hidden");
+            updating(n.id);
+          }
+        });
+      });
+    })
+  );
+}
+
+function updating(id) {
+  let dict = JSON.parse(localStorage.getItem("comment")) || [];
+
+  const update = document.querySelectorAll(".update");
+  update.forEach((n) =>
+    n.addEventListener("click", function (e) {
+      let para = e.target.previousElementSibling.value;
+      dict.comments.map((item) => {
+        if (item.id === id) {
+          item.content = para;
+        }
+
+        item.replies.map((t) => {
+          if (t.id === id) {
+            t.content = para;
+          }
+        });
+      });
+      localStorage.setItem("comment", JSON.stringify(dict));
+      para = "";
+      container.innerHTML = "";
+      initial();
     })
   );
 }
@@ -267,72 +336,14 @@ const minus=document.querySelectorAll('.minus');
 
 const num=document.querySelectorAll('.number')
 plus.forEach(n=>n.addEventListener('click',function(e){
-    // console.log(e.target.nextElementSibling.textContent);
 count=+e.target.nextElementSibling.textContent+1;
 e.target.nextElementSibling.textContent=count;
 }))
 
 minus.forEach(n=>n.addEventListener('click',function(e){
     if(count===0)return;
-    // console.log(e.target.previousElementSibling.textContent);
 count=+e.target.previousElementSibling.textContent-1;
 e.target.previousElementSibling.textContent=count;
 }))
 }
-
-
-
-// function practice(){
-//     // console.log("changyy");
-//   let replyTo, updateTo;
-
-//     const edit = document.querySelectorAll(".edit");
-//     edit.forEach((n) =>
-//       n.addEventListener("click", function (e) {
-//         console.log(e.target.parentElement.parentElement.parentElement.parentElement.parentElement);
-//         let val =
-//           e.target.closest(".section").children[1].lastElementChild.textContent;
-  
-//        replyTo =
-//           e.target.closest(".section").children[1].firstElementChild.textContent;
-      
-//         const choice = "update";
-//         const html = addComment(val, choice);
-//          updateTo= e.target.closest('.block').previousElementSibling
-//         // let updateTo=e.target.parentElement.parentElement.parentElement.parentElement.parentElement;
-//         e.target.closest(".block").insertAdjacentHTML("beforebegin", html);
-//         e.target.closest(".block").classList.add("hidden");
-//         a = e.target;
-
-
-//   const update = document.querySelectorAll(".update");
-//   console.log(update);
-//   update.forEach((n) =>
-//     n.addEventListener("click", function (e) {
-//       console.log("updatiiiii");
-//       console.log(updateTo);
-//       if (e.target.classList.contains("update")) {
-//         // console.log(e.target.previousElementSibling);
-//         let para = e.target.previousElementSibling.value;
-//      if(replyTo)   replyTo=replyTo.replace('@','')
-//         if((replyTo.trim()).length===0)replyTo=undefined
-//         // if(!updateTo.classList.contains('hidden')){
-//         let time="Now"
-//         const html=myComment(para, replyTo,time,1);
-//         updateTo.insertAdjacentHTML('afterend',html);
-//         e.target.parentElement.classList.add("hidden");
-//     //   }
-//     // else{
-//     //   myComment(para,replyTo)
-//     //   e.target.parentElement.classList.add("hidden");
-
-//     // }
-//     }
-//     })
-//   );
-//         deleteComment();
-//       })
-//     );
-
-//     }
 
