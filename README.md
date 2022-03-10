@@ -4,7 +4,7 @@ This is my solution to <strong>Interactive Comment Section</strong> challenge by
 <hr>
 
 <h3>Live Link</h3>
-<a href="">Click here</a>
+<a href="https://sonakshirawat.github.io/Interactive-comment-section/">Click here</a>
 <hr>
 <h3>Features</h3>
 <ul>
@@ -28,6 +28,7 @@ This is my solution to <strong>Interactive Comment Section</strong> challenge by
 <img src="design/active-states.jpg" alt="Desktop version"/>
 <p align="center">
 <img src="design/mobile-design.jpg"  alt="Mobile view">
-<img src="design/mobile-modal.jpg"  alt="Mobile view">
-
 </p>
+<p align="center">
+<img src="design/mobile-modal.jpg"  alt="Mobile view">
+  </p>
