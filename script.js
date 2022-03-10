@@ -10,9 +10,10 @@ const delSection = document.querySelector(".del_comment");
 const delBtn = document.querySelector(".del_btn");
 const cancelBtn = document.querySelector(".cancel_btn");
 
+const send1=document.querySelector('.send1');
 //Event Listners
 window.addEventListener("load", load);
-
+send1.addEventListener("click",message);
 //functions
 async function load() {
   container.innerHTML = "";
@@ -222,15 +223,7 @@ function sending(idd) {
     n.addEventListener("click", function (e) {
       let para = e.target.previousElementSibling.value;
 
-      if (text.value) {
-        if (text.value === "") return;
-        // console.log(text.value);
-        details(text.value, dict.comments, "");
-        localStorage.setItem("comment", JSON.stringify(dict));
-        text.value = "";
-        container.innerHTML = "";
-        initial();
-      }
+      
       dict.comments.map((item) => {
         if (item.id === +idd) {
           details(para, item.replies, item);
@@ -250,6 +243,21 @@ function sending(idd) {
     })
   );
 }
+
+function message(){
+  let dict = JSON.parse(localStorage.getItem("comment")) || [];
+
+  if (text.value) {
+    if (text.value === "") return;
+    // console.log(text.value);
+    details(text.value, dict.comments, "");
+    localStorage.setItem("comment", JSON.stringify(dict));
+    text.value = "";
+    container.innerHTML = "";
+    initial();
+  }
+}
+
 
 function details(para, local, item) {
   const detail = {

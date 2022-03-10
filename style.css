@@ -19,7 +19,7 @@ body {
   font-weight: 600;
   border-radius: 5px;
 }
-.send,
+.send,.send1,
 .update {
   background-color: hsl(238, 40%, 52%);
 }
